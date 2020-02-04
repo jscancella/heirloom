@@ -1,0 +1,12 @@
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
+/javafx-sdk-11.0.2/
+/openjfx-11.0.2_windows-x64_bin-jmods.zip
+/openjfx-11.0.2_windows-x64_bin-sdk.zip
+/.classpath
+/.project
+/.settings/
+/bin/
