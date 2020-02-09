@@ -1,6 +1,7 @@
 plugins {
   id 'application'
   id 'org.openjfx.javafxplugin' version '0.0.8'
+  //look into https://badass-runtime-plugin.beryx.org/releases/latest/ for compiling into standalone application with custom JRE
 }
 
 repositories {
@@ -12,6 +13,8 @@ javafx {
     modules = [ 'javafx.controls' ]
 }
 
+sourceCompatibility = 11
+targetCompatibility = 11
 
 mainClassName = 'com.github.jscancella.HelloFX'
 
