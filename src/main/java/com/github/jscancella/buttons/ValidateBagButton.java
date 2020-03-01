@@ -2,7 +2,7 @@ package com.github.jscancella.buttons;
 
 import java.io.IOException;
 
-import com.github.jscancella.domain.Bag;
+import com.github.jscancella.Main;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -10,17 +10,24 @@ import javafx.scene.control.CheckBox;
 public class ValidateBagButton extends Button{
   private static final boolean IGNORE_HIDDEN_FILES = true;
 
-  public ValidateBagButton(final Bag bag, final CheckBox isBagValidCheckbox, final CheckBox isBagCompleteCheckbox) {
+  public ValidateBagButton(final Main main, final CheckBox isBagValidCheckbox, final CheckBox isBagCompleteCheckbox) {
     super("Validate Bag");
     
     this.setOnAction(action -> {
       boolean isValid;
       try{
-        isValid = bag.isValid(IGNORE_HIDDEN_FILES);
+        //TODO show progress bar or something
+        isValid = main.getBag().isValid(IGNORE_HIDDEN_FILES);
         isBagValidCheckbox.setSelected(isValid);
-         //TODO figure out isBagCompleteCheckbox
-      } catch(IOException e1){
-        //TODO tell user about error
+        if(isValid) {
+          isBagCompleteCheckbox.setSelected(true);
+        }
+        else {
+          //can be complete but not valid
+          isBagCompleteCheckbox.setSelected(main.getBag().isComplete(IGNORE_HIDDEN_FILES));
+        }
+      } catch(IOException e){
+        main.InformUserAboutError(e);
       }
     });
   }

@@ -6,7 +6,7 @@ import java.nio.file.Paths;
 import com.github.jscancella.buttons.CheckAgainstProfileButton;
 import com.github.jscancella.buttons.CreateNewBagButton;
 import com.github.jscancella.buttons.OpenBagButton;
-import com.github.jscancella.buttons.UpdateBagButton;
+import com.github.jscancella.buttons.SaveBagButton;
 import com.github.jscancella.buttons.ValidateBagButton;
 import com.github.jscancella.domain.Bag;
 import com.github.jscancella.trees.BagTree;
@@ -60,22 +60,22 @@ public class Main extends Application {
   }
   
   private void populateToolbar(final ToolBar toolBar, TreeView<Path> dataFiles, TreeView<Path> tagFiles, TableView<String> metadataTable, final Stage stage) {
-    final Button createNewBagButton = new CreateNewBagButton(dataFiles, tagFiles, metadataTable);
+    final Button createNewBagButton = new CreateNewBagButton(this, dataFiles, tagFiles, metadataTable);
     toolBar.getItems().add(createNewBagButton);
     
-    final Button openBagButton = new OpenBagButton(bag, dataFiles, tagFiles, metadataTable, stage);
+    final Button openBagButton = new OpenBagButton(this, dataFiles, tagFiles, metadataTable, stage);
     toolBar.getItems().add(openBagButton);
     
     final CheckBox isBagValidCheckbox = new CheckBox("Valid?");
     final CheckBox isBagCompleteCheckbox = new CheckBox("Complete?");
-    final Button validateBagButton = new ValidateBagButton(bag, isBagValidCheckbox, isBagCompleteCheckbox);
+    final Button validateBagButton = new ValidateBagButton(this, isBagValidCheckbox, isBagCompleteCheckbox);
     toolBar.getItems().add(validateBagButton);
     
     final CheckBox isBagProfileCompliantCheckbox = new CheckBox("Profile Compliant?");
-    final Button checkAgainstProfileButton = new CheckAgainstProfileButton(isBagProfileCompliantCheckbox);
+    final Button checkAgainstProfileButton = new CheckAgainstProfileButton(this, isBagProfileCompliantCheckbox);
     toolBar.getItems().add(checkAgainstProfileButton);
     
-    final Button updateBagButton = new UpdateBagButton(dataFiles, tagFiles, metadataTable, stage);
+    final Button updateBagButton = new SaveBagButton(this, dataFiles, tagFiles, metadataTable, stage);
     toolBar.getItems().add(updateBagButton);
     
     final Separator verticalSeparator = new Separator(Orientation.VERTICAL);
@@ -133,6 +133,7 @@ public class Main extends Application {
     
     mainPane.getItems().add(metadataVbox);
     
+    //TODO need to change this to be proper values like key value pairs...
     final Label metadataLabel = new Label("Bag Metadata");
     metadataVbox.getChildren().add(metadataLabel);
     final TableView<String> metadataTable = new TableView<>();
@@ -150,12 +151,28 @@ public class Main extends Application {
     metadataTable.getColumns().add(valueColumn);
     
     //TODO replace with real data
-    metadataTable.setItems(FXCollections.observableArrayList("foo", "bar"));
+    metadataTable.setItems(FXCollections.observableArrayList("foo", "bar", "ham", "sandwich"));
     
     return metadataTable;
+  }
+  
+  public Bag getBag() {
+    return this.bag;
+  }
+  
+  public void InformUserAboutError(Exception e) {
+    //TODO
   }
 
   public static void main(String[] args) {
       launch();
+  }
+
+  public void resetBag(){
+    this.bag = null;
+  }
+  
+  public void setBag(final Bag bag) {
+    this.bag = bag;
   }
 }

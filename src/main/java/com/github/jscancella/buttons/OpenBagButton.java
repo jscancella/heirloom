@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.github.jscancella.Main;
 import com.github.jscancella.domain.Bag;
 
 import javafx.collections.FXCollections;
@@ -19,15 +20,15 @@ import javafx.stage.Stage;
 
 public class OpenBagButton extends Button{
 
-  public OpenBagButton(Bag bag, TreeView<Path> dataFiles, TreeView<Path> tagFiles, TableView<String> metadataTable, final Stage stage) {
+  public OpenBagButton(final Main main, TreeView<Path> dataFiles, TreeView<Path> tagFiles, TableView<String> metadataTable, final Stage stage) {
     super("Open Bag");
     
     this.setOnAction(action -> {
       final File bagitRootDir = new DirectoryChooser().showDialog(stage);
       if(bagitRootDir != null) {
         try{
-//          bag = 
-              Bag.read(bagitRootDir.toPath());
+          final Bag bag = Bag.read(bagitRootDir.toPath());
+          main.setBag(bag);
           //TODO need to add bag stuff to rest of scene
           dataFiles.setRoot(new TreeItem<Path>(bag.getDataDir()));
           dataFiles.getRoot().setExpanded(true);
@@ -41,7 +42,7 @@ public class OpenBagButton extends Button{
             .collect(Collectors.toList());
           metadataTable.setItems(FXCollections.observableArrayList(flattenList));
         } catch(IOException e){
-          //TODO tell user about error
+          main.InformUserAboutError(e);
         }
       }
     });
