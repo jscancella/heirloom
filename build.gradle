@@ -22,7 +22,7 @@ dependencies {
   implementation 'org.slf4j:slf4j-api:1.7.30', 
   'com.fasterxml.jackson.core:jackson-core:2.10.1', 
   'com.fasterxml.jackson.core:jackson-databind:2.10.1',
-  'com.github.jscancella:bagging:3.0'
+  'com.github.jscancella:bagging:4.0'
     
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.2' 
 
