@@ -9,12 +9,9 @@ repositories {
 }
 
 javafx {
-    version = "11.0.2"
-    modules = [ 'javafx.controls' ]
+    version = "14"
+    modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
-
-sourceCompatibility = 11
-targetCompatibility = 11
 
 mainClassName = 'com.github.jscancella.Main'
 
@@ -27,4 +24,13 @@ dependencies {
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.2' 
 
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.5.2'
+}
+
+sourceSets {
+  main {
+    resources {
+        srcDirs = ["src/main/java"]
+        includes = ["**/*.fxml"]
+    }
+  }
 }
