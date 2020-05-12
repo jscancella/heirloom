@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.List;
 import java.util.Optional;
 
 import com.github.jscancella.BagTreeItem;
@@ -43,6 +44,7 @@ import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 
 public class RootController {
   @FXML private VBox rootPane;
@@ -58,6 +60,7 @@ public class RootController {
   @FXML private TableView<SimpleImmutableEntry<String, String>> metadataTable;
   
   private final ContextMenu bagtreeContextMenu = new ContextMenu();
+  private final ContextMenu metadataContextMenu = new ContextMenu();
   
   private Bag bag;
   
@@ -66,36 +69,21 @@ public class RootController {
     initalizeTreeViews();
     initalizeMetadata();
     
-    MenuItem item1 = new MenuItem("Add File");
-    item1.setOnAction(new EventHandler<ActionEvent>() {
-        @Override
-        public void handle(ActionEvent e) {
-          //TODO
-          informUserAboutError("NOT YET IMPLEMENTED", "Sorry, but this functionality has not yet been implemented!", null);
-        }
-    });
-    MenuItem item2 = new MenuItem("Add Folder");
-    item2.setOnAction(new EventHandler<ActionEvent>() {
-        @Override
-        public void handle(ActionEvent e) {
-          //TODO
-          informUserAboutError("NOT YET IMPLEMENTED", "Sorry, but this functionality has not yet been implemented!", null);
-        }
-    });
-    bagtreeContextMenu.getItems().addAll(item1, item2);
+    initalizeTreeMenu();
+    initalizeMetadataMenu();
+    
+    handleCreateNewBagButtonAction(null);
   }
   
   private void initalizeTreeViews() {
-    //TODO modify so you can add files
     tagFilesTree.setContextMenu(bagtreeContextMenu);
     dataFilesTree.setContextMenu(bagtreeContextMenu);
   }
   
   private void initalizeMetadata() {
-    //TODO modify so table allows you to add new lines...
     metadataTable.getSelectionModel().setCellSelectionEnabled(true);
     metadataTable.setEditable(true);
-    
+    //TODO change to be an ObservableList<ObservableList<String>>
     final TableColumn<SimpleImmutableEntry<String, String>, String> keyColumn = new TableColumn<>("Key");
     keyColumn.prefWidthProperty().bind(metadataTable.widthProperty().divide(2).subtract(1));
     keyColumn.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -108,7 +96,49 @@ public class RootController {
     valueColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getValue()));
     metadataTable.getColumns().add(valueColumn);
     
-//    metadataTable.setContextMenu(value);
+    metadataTable.setContextMenu(metadataContextMenu);
+  }
+  
+  private void initalizeTreeMenu() {
+    final MenuItem addFileMenuItem = new MenuItem("Add File");
+    addFileMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+        @Override
+        public void handle(ActionEvent e) {
+          final List<File> dataFiles = new FileChooser().showOpenMultipleDialog(rootPane.getScene().getWindow());
+          for(final File dataFile : dataFiles) {
+            dataFilesTree.getRoot().getChildren().add(new BagTreeItem(dataFile.toPath()));
+          }
+        }
+    });
+    final MenuItem addFolderMenuItem = new MenuItem("Add Folder");
+    addFolderMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+        @Override
+        public void handle(ActionEvent e) {
+          final File dir = new DirectoryChooser().showDialog(rootPane.getScene().getWindow());
+          if(dir != null) {
+            dataFilesTree.getRoot().getChildren().add(new BagTreeItem(dir.toPath()));
+          }
+        }
+    });
+    bagtreeContextMenu.getItems().addAll(addFileMenuItem, addFolderMenuItem);
+  }
+  
+  private void initalizeMetadataMenu() {
+    final MenuItem addMenuItem = new MenuItem("Add");
+    addMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent e) {
+        metadataTable.getItems().add(new SimpleImmutableEntry<String, String>("New Key", "New Value"));
+      }
+    });
+    final MenuItem addFolderMenuItem = new MenuItem("Delete");
+    addFolderMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+        @Override
+        public void handle(ActionEvent e) {
+          metadataTable.getItems().remove(metadataTable.getSelectionModel().getSelectedItem());
+        }
+    });
+    metadataContextMenu.getItems().addAll(addMenuItem, addFolderMenuItem);
   }
   
   @FXML protected void handleValidateButtonAction(ActionEvent event) {    
@@ -161,7 +191,7 @@ public class RootController {
     checkAgainstProfileButton.setDisable(false);
   }
   
-  @FXML protected void handleCheckAgainstProfileButtonAction(ActionEvent event) {
+  @FXML protected void handleCheckAgainstProfileButtonAction() {
     final TextInputDialog txtDlg = new TextInputDialog();
     txtDlg.setTitle("Check Against Profile");
     txtDlg.setHeaderText("Please enter the URL for the profile that you wish to validate the bag against.");
@@ -170,9 +200,7 @@ public class RootController {
     //https://raw.githubusercontent.com/bagit-profiles/bagit-profiles-validator/master/fixtures/bagProfileBar.json
     
     result.ifPresent(input -> {
-      InputStream jsonProfile;
-      try{
-        jsonProfile = new URL(result.get()).openStream();
+      try(InputStream jsonProfile = new URL(result.get()).openStream()){
         BagLinter.checkAgainstProfile(jsonProfile, bag);
       } catch(IOException e){
         informUserAboutError("Failed Profile Check", "There was a problem reading the profile: [" + e + "].", e);
