@@ -17,11 +17,11 @@
   <children>
       <ToolBar prefHeight="40.0" prefWidth="200.0">
         <items>
-          <Button fx:id="createNewBagButton" mnemonicParsing="false" text="Create New Bag" />
+          <Button fx:id="createNewBagButton" mnemonicParsing="false" onAction="#handleCreateNewBagButtonAction" text="Create New Bag" />
             <Button fx:id="openBagButton" mnemonicParsing="false" onAction="#handleOpenBagButtonAction" text="Open Bag" />
             <Button fx:id="validateButton" disable="true" mnemonicParsing="false" onAction="#handleValidateButtonAction" text="Validate" />
             <Button fx:id="checkAgainstProfileButton" disable="true" mnemonicParsing="false" onAction="#handleCheckAgainstProfileButtonAction" text="Check Against Profile" />
-            <Button fx:id="saveBagButton" mnemonicParsing="false" text="Save Bag" />
+            <Button fx:id="saveBagButton" disable="true" mnemonicParsing="false" onAction="#handleSaveBagButtonAction" text="Save Bag" />
             <CheckBox fx:id="ignoreHiddenFiles" mnemonicParsing="false" text="Ignore Hidden Files" />
             <Separator orientation="VERTICAL" />
             <CheckBox fx:id="isValidCheckbox" mnemonicParsing="false" mouseTransparent="true" text="Valid?" />
