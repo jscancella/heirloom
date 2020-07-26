@@ -8,3 +8,7 @@
  */
 
 rootProject.name = 'heirloom'
+
+if( file('../bagging').exists() ) {
+	includeBuild '../bagging'
+}
